@@ -1,0 +1,16 @@
+mvn clean package
+Remove-Item dummy-source-connector-plugin\lib\example-source-connector-1.0-SNAPSHOT-shaded.jar
+Copy-Item -Force target\example-source-connector-1.0-SNAPSHOT-shaded.jar dummy-source-connector-plugin\lib\
+kubectl delete connect dummy-source-connect -n confluent
+minikube image rm docker.io/library/dummy-source-connector:1.0.0
+docker rmi dummy-source-connector:1.0.0
+docker build --no-cache -t dummy-source-connector:1.0.0 .
+minikube image load dummy-source-connector:1.0.0
+kubectl apply -f k8s\connect.yaml
+kubectl get pods -n confluent
+
+Wait for pod to be 1/1 Running, then Block 2:
+
+kubectl exec dummy-source-connect-0 -n confluent -- curl -s http://localhost:8083/connector-plugins
+kubectl apply -f k8s\source-connector.yaml
+kubectl apply -f k8s\sink-connector.yaml

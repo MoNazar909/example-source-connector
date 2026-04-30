@@ -1,0 +1,4 @@
+com\example\connectors\DummySourceConnector.class
+com\example\connectors\GenericHttpSinkConnector.class
+com\example\connectors\GenericHttpSinkTask.class
+com\example\connectors\DummySourceTask.class

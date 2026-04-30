@@ -1,0 +1,23 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: Connect
+metadata:
+  name: dummy-source-connect
+  namespace: confluent
+spec:
+  replicas: 1
+  image:
+    application: docker.io/library/dummy-source-connector:1.0.0
+    init: confluentinc/confluent-init-container:2.7.0
+  configOverrides:
+    server:
+      - plugin.path=/usr/share/java,/mnt/plugins
+  dependencies:
+    kafka:
+      bootstrapEndpoint: pkc-921jm.us-east-2.aws.confluent.cloud:9092
+      authentication:
+        type: plain
+        jaasConfig:
+          secretRef: confluent-cloud-credentials
+      tls:
+        enabled: true
+        ignoreTrustStoreConfig: true
