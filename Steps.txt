@@ -1,0 +1,16 @@
+# Custom Kafka Connector POC — Setup Steps
+
+Reference: https://www.confluent.io/blog/how-build-custom-kafka-connector/
+
+1. Create dummy source connector and sink connector Java classes
+2. Compile into a Fat JAR using Maven — contains your classes and all dependencies
+3. Create a Docker image using `confluentinc/cp-server-connect:8.2.0` as the base image and copy the JAR into it
+4. Start a local Kubernetes cluster using Minikube and create a namespace
+5. Install the CFK operator into the namespace using Helm
+6. Create a cluster on Confluent Cloud and note down the bootstrap URL, API key, and secret
+7. Create a Kafka topic on Confluent Cloud for the source and sink connectors to use
+8. Create Kubernetes secrets containing the Confluent Cloud API key and secret
+9. Load the Docker image into Minikube's registry
+10. Deploy the Connect cluster to the Kubernetes namespace using a CFK YAML file
+11. Deploy the source and sink connectors by applying their CFK YAML files
+12. Verify the end-to-end flow by checking the Connect pod logs — source connector produces to the topic, sink connector consumes and prints to logs
