@@ -1,12 +1,12 @@
 apiVersion: platform.confluent.io/v1beta1
 kind: Connect
 metadata:
-  name: dummy-source-connect
+  name: generic-http-sink-connect
   namespace: confluent
 spec:
   replicas: 1
   image:
-    application: docker.io/library/dummy-source-connector:1.0.0
+    application: docker.io/library/generic-http-sink-connector:1.0.0
     init: confluentinc/confluent-init-container:2.7.0
   configOverrides:
     server:

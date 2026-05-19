@@ -17,7 +17,8 @@ public class GenericHttpSinkTask extends SinkTask {
     @Override
     public void put(Collection<SinkRecord> records) {
         for (SinkRecord record : records) {
-            System.out.println("Received record: " + record.value());
+            System.out.printf("[%s][partition=%d][offset=%d] %s%n",
+                record.topic(), record.kafkaPartition(), record.kafkaOffset(), record.value());
         }
     }
 

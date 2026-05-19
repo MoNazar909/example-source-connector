@@ -1,0 +1,17 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: Connector
+metadata:
+  name: generic-hcm-sink-connector
+  namespace: confluent
+spec:
+  class: com.example.connectors.GenericHttpSinkConnector
+  taskMax: 1
+  connectClusterRef:
+    name: generic-http-sink-connect
+  configs:
+    topics: <KAFKA_TOPIC>
+    value.converter: io.confluent.connect.avro.AvroConverter
+    value.converter.schema.registry.url: <SCHEMA_REGISTRY_URL>
+    value.converter.basic.auth.credentials.source: USER_INFO
+    value.converter.basic.auth.user.info: "<SCHEMA_REGISTRY_API_KEY>:<SCHEMA_REGISTRY_API_SECRET>"
+    key.converter: org.apache.kafka.connect.storage.StringConverter

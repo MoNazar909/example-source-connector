@@ -2,7 +2,7 @@
 target/
 
 # Generated connector JAR in plugin folder (rebuilt by mvn clean package)
-dummy-source-connector-plugin/lib/*.jar
+generic-http-sink-connector-plugin/lib/*.jar
 
 # IntelliJ IDEA
 .idea/
@@ -24,3 +24,7 @@ Thumbs.db
 
 # Local scratch files
 patch.json
+
+# Credentials
+plain.txt
+k8s/sink-connector.yaml
