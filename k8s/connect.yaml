@@ -21,7 +21,3 @@ spec:
       tls:
         enabled: true
         ignoreTrustStoreConfig: true
-
-        /*
-        - turn into a helm teplate, bootstrapendpoint will be dynamic, cpu memory limits for pods. memory request limits. pod disturbanc budget - only prod, latest version of init container
-        */
