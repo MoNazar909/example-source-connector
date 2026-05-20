@@ -6,7 +6,7 @@ metadata:
 spec:
   replicas: 1
   image:
-    application: docker.io/library/generic-http-sink-connector:1.0.0
+    application: docker.io/library/generic-http-sink-connector:1.0.1
     init: confluentinc/confluent-init-container:2.7.0
   configOverrides:
     server:

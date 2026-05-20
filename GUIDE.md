@@ -200,7 +200,7 @@ The `dummy-source-connector-plugin/lib/` folder is what Docker will copy into th
 
 Make sure Docker Desktop is running. Then build the image:
 
-docker build --no-cache -t dummy-source-connector:1.0.0 .
+docker build --no-cache -t generic-http-sink-connector:1.0.1 .
 
 - `--no-cache` forces a fresh build (important after code changes)
 - `-t dummy-source-connector:1.0.0` tags the image with a name and version
@@ -311,7 +311,7 @@ kubectl patch secret confluent-cloud-credentials -n confluent --type=merge --pat
 Minikube has its own internal Docker registry separate from your local one. You need to load your image into it so the Kubernetes pod can find it:
 
 ```powershell
-minikube image load dummy-source-connector:1.0.0
+minikube image load generic-http-sink-connector:1.0.1
 ```
 
 This may take a minute depending on image size. You can verify it loaded:
@@ -352,7 +352,7 @@ kubectl get pods -n confluent -w
 
 Once running, you can verify that your custom connector plugin was loaded successfully:
 ```powershell
-kubectl exec dummy-source-connect-0 -n confluent -- curl -s http://localhost:8083/connector-plugins
+kubectl exec generic-http-sink-connect-0 -n confluent -- curl -s http://localhost:8083/connector-plugins
 ```
 
 What the command does:
@@ -388,7 +388,7 @@ You should see both `dummy-source-connector` and `generic-hcm-sink-connector` li
 Stream the logs from the Connect pod to see the sink connector receiving messages:
 
 ```powershell
-kubectl logs dummy-source-connect-0 -n confluent -f
+kubectl logs generic-http-sink-connect-0 -n confluent -f
 ```
 
 Within a few seconds you should see lines like:
