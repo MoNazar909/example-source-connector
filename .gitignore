@@ -11,7 +11,8 @@ generic-http-sink-connector-plugin/lib/*.jar
 *.ipr
 
 # VS Code
-.vscode/
+.vscode/settings.json
+.vscode/*.code-workspace
 
 # Eclipse
 .classpath
@@ -28,3 +29,5 @@ patch.json
 # Credentials
 plain.txt
 k8s/sink-connector.yaml
+docker-compose.yml
+connector-config.json

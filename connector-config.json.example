@@ -1,0 +1,15 @@
+{
+  "name": "generic-hcm-sink-connector",
+  "config": {
+    "connector.class": "com.example.connectors.GenericHttpSinkConnector",
+    "topics": "<KAFKA_TOPIC>",
+    "value.converter": "io.confluent.connect.avro.AvroConverter",
+    "value.converter.schema.registry.url": "<SCHEMA_REGISTRY_URL>",
+    "value.converter.basic.auth.credentials.source": "USER_INFO",
+    "value.converter.basic.auth.user.info": "<SCHEMA_REGISTRY_API_KEY>:<SCHEMA_REGISTRY_API_SECRET>",
+    "key.converter": "io.confluent.connect.avro.AvroConverter",
+    "key.converter.schema.registry.url": "<SCHEMA_REGISTRY_URL>",
+    "key.converter.basic.auth.credentials.source": "USER_INFO",
+    "key.converter.basic.auth.user.info": "<SCHEMA_REGISTRY_API_KEY>:<SCHEMA_REGISTRY_API_SECRET>"
+  }
+}
