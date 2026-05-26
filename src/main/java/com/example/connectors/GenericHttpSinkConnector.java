@@ -38,8 +38,15 @@ public class GenericHttpSinkConnector extends SinkConnector {
     @Override
     public ConfigDef config() {
         return new ConfigDef()
-                .define("topics", ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Source topic")
-                .define("content.type", ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Content-Type header for outbound API calls")
-                .define("secrets.base.path", ConfigDef.Type.STRING, "/etc/secrets", ConfigDef.Importance.HIGH, "Base path for mounted secrets volume");
+                .define("topics",                ConfigDef.Type.STRING, ConfigDef.Importance.HIGH,   "Source topic")
+                .define("content.type",          ConfigDef.Type.STRING, ConfigDef.Importance.HIGH,   "Content-Type header for outbound API calls")
+                .define("secrets.base.path",     ConfigDef.Type.STRING, "/etc/secrets", ConfigDef.Importance.HIGH, "Base path for mounted secrets volume")
+                .define("response.topic",        ConfigDef.Type.STRING, ConfigDef.Importance.HIGH,   "Topic for successful API responses")
+                .define("error.topic",           ConfigDef.Type.STRING, ConfigDef.Importance.HIGH,   "Topic for Workday business errors")
+                .define("dlq.topic",             ConfigDef.Type.STRING, ConfigDef.Importance.HIGH,   "Topic for failed messages after retries or internal errors")
+                .define("max.retries",           ConfigDef.Type.INT,    3,              ConfigDef.Importance.MEDIUM, "Max retry attempts for transient failures")
+                .define("retry.backoff.ms",      ConfigDef.Type.LONG,   1000L,          ConfigDef.Importance.MEDIUM, "Delay between retries in milliseconds")
+                .define("kafka.bootstrap.servers", ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Kafka bootstrap servers for the internal producer")
+                .define("schema.registry.url",   ConfigDef.Type.STRING, ConfigDef.Importance.HIGH,   "Schema Registry URL for Avro serialization");
     }
 }
