@@ -10,6 +10,8 @@
     "key.converter": "io.confluent.connect.avro.AvroConverter",
     "key.converter.schema.registry.url": "<SCHEMA_REGISTRY_URL>",
     "key.converter.basic.auth.credentials.source": "USER_INFO",
-    "key.converter.basic.auth.user.info": "<SCHEMA_REGISTRY_API_KEY>:<SCHEMA_REGISTRY_API_SECRET>"
+    "key.converter.basic.auth.user.info": "<SCHEMA_REGISTRY_API_KEY>:<SCHEMA_REGISTRY_API_SECRET>",
+    "content.type": "<CONTENT_TYPE>",
+    "secrets.base.path": "/etc/secrets"
   }
 }

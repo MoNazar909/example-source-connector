@@ -28,6 +28,7 @@ patch.json
 
 # Credentials
 plain.txt
+secrets/
 k8s/sink-connector.yaml
 docker-compose.yml
 connector-config.json

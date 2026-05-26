@@ -38,6 +38,8 @@ public class GenericHttpSinkConnector extends SinkConnector {
     @Override
     public ConfigDef config() {
         return new ConfigDef()
-                .define("topics", ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Source topic");
+                .define("topics", ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Source topic")
+                .define("content.type", ConfigDef.Type.STRING, ConfigDef.Importance.HIGH, "Content-Type header for outbound API calls")
+                .define("secrets.base.path", ConfigDef.Type.STRING, "/etc/secrets", ConfigDef.Importance.HIGH, "Base path for mounted secrets volume");
     }
 }
