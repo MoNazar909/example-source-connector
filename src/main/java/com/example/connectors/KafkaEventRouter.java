@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 class KafkaEventRouter {
 
     private static final Schema VALUE_SCHEMA = new Schema.Parser().parse(
-        "{\"type\":\"record\",\"name\":\"HcmSinkResponse\",\"namespace\":\"com.standardinsurance.eoi\","
+        "{\"type\":\"record\",\"name\":\"BentechSinkResponse\",\"namespace\":\"com.standardinsurance.eoi\","
         + "\"fields\":["
         + "{\"name\":\"http_status_code\",\"type\":[\"null\",\"string\"],\"default\":null},"
         + "{\"name\":\"http_status_message\",\"type\":[\"null\",\"string\"],\"default\":null},"
@@ -35,7 +35,7 @@ class KafkaEventRouter {
     private static final Schema KEY_SCHEMA = new Schema.Parser().parse(
         "{\"type\":\"record\",\"name\":\"KafkaKey\",\"namespace\":\"com.standardinsurance.eoi\","
         + "\"fields\":[{\"name\":\"kafka_key\",\"type\":\"string\","
-        + "\"doc\":\"Kafka message key: GroupId-WorkerId-Target_HCM-EventType\"}]}");
+        + "\"doc\":\"Kafka message key: GroupId-WorkerId-Target_bentech-EventType\"}]}");
 
     private final KafkaProducer<Object, Object> producer;
     private final String responseTopic;

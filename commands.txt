@@ -23,12 +23,12 @@ minikube start
 
 //connector pod
 kubectl get pods -n confluent
-kubectl delete connect generic-hcm-connect -n confluent
+kubectl delete connect generic-bentech-connect -n confluent
 
 //connector instances
 kubectl get connectors -n confluent
 kubectl delete connect dummy-source-connect -n confluent
-kubectl delete connector generic-hcm-sink-connector -n confluent
+kubectl delete connector generic-bentech-sink-connector -n confluent
 
 //sink logs
 kubectl logs dummy-source-connect-0 -n confluent -f

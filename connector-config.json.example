@@ -1,5 +1,5 @@
 {
-  "name": "generic-hcm-sink-connector",
+  "name": "generic-bentech-sink-connector",
   "config": {
     "connector.class": "com.example.connectors.GenericHttpSinkConnector",
     "topics": "<KAFKA_TOPIC>",

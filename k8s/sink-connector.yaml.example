@@ -1,7 +1,7 @@
 apiVersion: platform.confluent.io/v1beta1
 kind: Connector
 metadata:
-  name: generic-hcm-sink-connector
+  name: generic-bentech-sink-connector
   namespace: confluent
 spec:
   class: com.example.connectors.GenericHttpSinkConnector

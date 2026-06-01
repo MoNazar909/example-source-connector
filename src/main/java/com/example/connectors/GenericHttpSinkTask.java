@@ -90,7 +90,7 @@ public class GenericHttpSinkTask extends SinkTask {
             workerId       = flattenedEvent.has("worker_id") ? flattenedEvent.get("worker_id").asText(null) : null;
             String tokenUrl = flattenedEvent.get("target_api_token_url").asText();
             String apiUrl   = flattenedEvent.get("target_api_url").asText();
-            String payload  = (String) value.get("target_HCM_payload");
+            String payload  = (String) value.get("target_bentech_payload");
 
             System.out.printf("[%s][partition=%d][offset=%d] key=%s groupId=%s apiUrl=%s%n",
                 record.topic(), record.kafkaPartition(), record.kafkaOffset(),

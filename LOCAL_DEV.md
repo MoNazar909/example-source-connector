@@ -57,7 +57,7 @@ curl.exe -X POST http://localhost:8083/connectors -H "Content-Type: application/
 Messages from the topic will print directly in the `docker compose up` terminal in this format:
 
 ```
-[standard.eda.hcmdata.workday][partition=3][offset=42] key=WMT-12345-... value=Struct{field1=value1, ...}
+[standard.eda.bentechdata.workday][partition=3][offset=42] key=WMT-12345-... value=Struct{field1=value1, ...}
 ```
 
 ---
@@ -119,15 +119,15 @@ Check if the Kubernetes connector is still running and competing for the same co
 ```
 kubectl get connectors -n confluent
 ```
-If it is, delete it: `kubectl delete connector generic-hcm-sink-connector -n confluent`
+If it is, delete it: `kubectl delete connector generic-bentech-sink-connector -n confluent`
 
 **Check connector status**
 ```
-curl.exe http://localhost:8083/connectors/generic-hcm-sink-connector/status
+curl.exe http://localhost:8083/connectors/generic-bentech-sink-connector/status
 ```
 
 **Delete and re-register the connector**
 ```
-curl.exe -X DELETE http://localhost:8083/connectors/generic-hcm-sink-connector
+curl.exe -X DELETE http://localhost:8083/connectors/generic-bentech-sink-connector
 curl.exe -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d "@connector-config.json"
 ```

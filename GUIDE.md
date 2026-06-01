@@ -379,7 +379,7 @@ Verify the connectors were created:
 kubectl get connectors -n confluent -w
 ```
 
-You should see both `dummy-source-connector` and `generic-hcm-sink-connector` listed, with status `Created` or `Running`.
+You should see both `dummy-source-connector` and `generic-bentech-sink-connector` listed, with status `Created` or `Running`.
 
 ---
 
@@ -428,7 +428,7 @@ kubectl get connectors -n confluent
 
 ### Delete a connector instance (not the pod)
 ```powershell
-kubectl delete connector generic-hcm-sink-connector -n confluent
+kubectl delete connector generic-bentech-sink-connector -n confluent
 kubectl delete connector dummy-source-connector -n confluent
 ```
 

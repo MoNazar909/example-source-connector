@@ -81,7 +81,7 @@ class WorkdayApiClient {
             return cached.accessToken;
         }
 
-        String secretPath = secretsBasePath + "/hcm-connector-tenant-secrets/";
+        String secretPath = secretsBasePath + "/bentech-connector-tenant-secrets/";
         String clientId     = readSecret(secretPath + groupId + "_clientId");
         String clientSecret = readSecret(secretPath + groupId + "_clientsecret");
         String refreshToken = readSecret(secretPath + groupId + "_refreshtoken");
