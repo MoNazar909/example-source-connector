@@ -1,3 +1,10 @@
+mvn clean package
+cp target/generic-http-sink-connector-1.0-SNAPSHOT-shaded.jar generic-http-sink-connector-plugin/lib/
+docker compose restart connect
+# once "Kafka Connect started" appears:
+curl.exe -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d "@connector-config.json"
+
+
 # Local Development & Testing Guide
 
 Instead of rebuilding a Docker image and redeploying to Kubernetes for every change, this setup runs the Kafka Connect worker locally via Docker Compose. You only rebuild the JAR — no image builds, no kubectl.
@@ -13,13 +20,81 @@ Instead of rebuilding a Docker image and redeploying to Kubernetes for every cha
 
 ## First-Time Setup
 
-Copy the example files and fill in credentials:
+### 1. Copy the example files
 
 ```
 cp docker-compose.yml.example docker-compose.yml
 cp connector-config.json.example connector-config.json
-cp k8s/sink-connector.yaml.example k8s/sink-connector.yaml
 ```
+
+### 2. Fill in `.env`
+
+Copy the template and fill in the **`standard-connect-sa`** credentials. This file is read by Docker Compose to configure the Connect worker container.
+
+```
+cp .env.example .env
+```
+
+| Field | What to put |
+|-------|-------------|
+| `KAFKA_BOOTSTRAP_SERVER` | Bootstrap server from your Confluent Cloud cluster (e.g. `pkc-xxx.us-east-2.aws.confluent.cloud:9092`) |
+| `CONNECT_SA_KAFKA_API_KEY` | API key for `standard-connect-sa` (`standard-connect-sa-kafka-api-key`) |
+| `CONNECT_SA_KAFKA_API_SECRET` | Corresponding secret |
+
+### 3. Fill in `connector-config.json`
+
+This file is POSTed to the Connect REST API to register the connector. It is read by the Connect framework — not Docker Compose or your Java code. Fill in the **`standard-workday-connector-sa`** SR credentials.
+
+| Placeholder | What to put |
+|-------------|-------------|
+| `<KAFKA_TOPIC>` | `standard-eda-bentechdata-workday` |
+| `<SCHEMA_REGISTRY_URL>` | Schema Registry endpoint from Confluent Cloud (e.g. `https://psrc-xxx.us-east-2.aws.confluent.cloud`) |
+| `<SCHEMA_REGISTRY_API_KEY>` | API key for `standard-workday-connector-sa` (`standard-workday-connector-sa-sr-api-key`) |
+| `<SCHEMA_REGISTRY_API_SECRET>` | Corresponding secret |
+| `<CONTENT_TYPE>` | `application/xml` |
+| `<KAFKA_BOOTSTRAP_SERVER>` | Same bootstrap server as in `.env` |
+| `<CONNECTOR_SA_KAFKA_API_KEY>` | API key for `standard-workday-connector-sa` (`standard-workday-connector-sa-kafka-api-key`) |
+| `<CONNECTOR_SA_KAFKA_API_SECRET>` | Corresponding secret |
+
+### 4. Create the `secrets/` directory
+
+The connector's Java code reads Kafka and Schema Registry credentials from files mounted at `/etc/secrets`. Locally, the `secrets/` folder is mounted into the container in its place.
+
+Create the following files (no file extension, plain text, value only — no newlines):
+
+```
+secrets/
+├── ccloud-kafka-credentials/
+│   ├── username        ← standard-workday-connector-sa-kafka-api-key  (the key itself)
+│   └── password        ← corresponding secret
+└── ccloud-sr-credentials/
+    ├── username        ← standard-workday-connector-sa-sr-api-key  (the key itself)
+    └── password        ← corresponding secret
+```
+
+PowerShell commands to create them:
+
+```powershell
+New-Item -ItemType Directory -Force secrets\ccloud-kafka-credentials
+New-Item -ItemType Directory -Force secrets\ccloud-sr-credentials
+
+Set-Content secrets\ccloud-kafka-credentials\username "<CONNECTOR_SA_KAFKA_API_KEY>" -NoNewline
+Set-Content secrets\ccloud-kafka-credentials\password "<CONNECTOR_SA_KAFKA_API_SECRET>" -NoNewline
+Set-Content secrets\ccloud-sr-credentials\username    "<CONNECTOR_SA_SR_API_KEY>"    -NoNewline
+Set-Content secrets\ccloud-sr-credentials\password    "<CONNECTOR_SA_SR_API_SECRET>"  -NoNewline
+```
+
+> `secrets/` is gitignored — these files will never be committed.
+
+### 5. Pre-create the Connect internal topics in Confluent Cloud
+
+The `standard-connect-sa` has no `CREATE` permission, so the worker cannot auto-create its internal topics. Create these three topics manually in the Confluent Cloud UI or CLI before starting the worker:
+
+| Topic | Partitions | Replication factor |
+|-------|------------|--------------------|
+| `standard-connect-configs` | 1 | 3 |
+| `standard-connect-offsets` | 25 | 3 |
+| `standard-connect-status` | 5 | 3 |
 
 ---
 
@@ -57,7 +132,7 @@ curl.exe -X POST http://localhost:8083/connectors -H "Content-Type: application/
 Messages from the topic will print directly in the `docker compose up` terminal in this format:
 
 ```
-[standard.eda.bentechdata.workday][partition=3][offset=42] key=WMT-12345-... value=Struct{field1=value1, ...}
+[standard-eda-bentechdata-workday][partition=3][offset=42] key=WMT-12345-... value=Struct{field1=value1, ...}
 ```
 
 ---

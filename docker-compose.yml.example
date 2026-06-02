@@ -1,6 +1,6 @@
 services:
   connect:
-    image: confluentinc/cp-server-connect:8.1.0
+    image: confluentinc/cp-kafka-connect:8.1.0
     ports:
       - "8083:8083"
       - "5005:5005"

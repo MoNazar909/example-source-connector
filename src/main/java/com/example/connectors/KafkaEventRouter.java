@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 class KafkaEventRouter {
 
     private static final Schema VALUE_SCHEMA = new Schema.Parser().parse(
-        "{\"type\":\"record\",\"name\":\"BentechSinkResponse\",\"namespace\":\"com.standardinsurance.eoi\","
+        "{\"type\":\"record\",\"name\":\"bentechSinkResponse\",\"namespace\":\"com.standardinsurance.eoi\","
         + "\"fields\":["
         + "{\"name\":\"http_status_code\",\"type\":[\"null\",\"string\"],\"default\":null},"
         + "{\"name\":\"http_status_message\",\"type\":[\"null\",\"string\"],\"default\":null},"
@@ -104,6 +104,7 @@ class KafkaEventRouter {
             System.out.println("Written to topic: " + topic);
         } catch (Exception e) {
             System.err.println("Failed to write to topic " + topic + ": " + e.getMessage());
+            e.printStackTrace(System.err);
         }
     }
 

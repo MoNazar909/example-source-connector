@@ -82,15 +82,16 @@ public class GenericHttpSinkTask extends SinkTask {
 
         try {
             Struct value  = (Struct) record.value();
-            groupId       = (String) value.get("group_id");
-            correlationId = (String) value.get("correlation_id");
-            eventType     = (String) value.get("event_type");
+            groupId       = (String) value.get("groupId");
+            correlationId = (String) value.get("correlationId");
+            eventType     = (String) value.get("eventType");
 
-            JsonNode flattenedEvent = objectMapper.readTree((String) value.get("flattened_event"));
-            workerId       = flattenedEvent.has("worker_id") ? flattenedEvent.get("worker_id").asText(null) : null;
-            String tokenUrl = flattenedEvent.get("target_api_token_url").asText();
-            String apiUrl   = flattenedEvent.get("target_api_url").asText();
-            String payload  = (String) value.get("target_bentech_payload");
+            JsonNode flattenedEvent = objectMapper.readTree((String) value.get("flattenedEvent"));
+            JsonNode eventMetaData  = flattenedEvent.path("eventMetaData");
+            workerId = eventMetaData.has("workerId") ? eventMetaData.get("workerId").asText(null) : null;
+            String tokenUrl = eventMetaData.get("targetTokenHostname").asText();
+            String apiUrl   = eventMetaData.get("targetHostname").asText();
+            String payload  = (String) value.get("targetBentechPayload");
 
             System.out.printf("[%s][partition=%d][offset=%d] key=%s groupId=%s apiUrl=%s%n",
                 record.topic(), record.kafkaPartition(), record.kafkaOffset(),
