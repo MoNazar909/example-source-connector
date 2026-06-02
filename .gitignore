@@ -25,11 +25,10 @@ Thumbs.db
 
 # Local scratch files
 patch.json
+.claude/
 
 # Credentials
 plain.txt
-secrets/
-k8s/sink-connector.yaml
 docker-compose.yml
 connector-config.json
 .env
