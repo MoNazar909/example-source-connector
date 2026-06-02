@@ -33,3 +33,4 @@ k8s/sink-connector.yaml
 docker-compose.yml
 connector-config.json
 .env
+SECRETS.md

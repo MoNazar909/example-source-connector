@@ -428,7 +428,7 @@ kubectl get connectors -n confluent
 
 ### Delete a connector instance (not the pod)
 ```powershell
-kubectl delete connector generic-bentech-sink-connector -n confluent
+kubectl delete connector generic-http-sink-connect -n confluent
 kubectl delete connector dummy-source-connector -n confluent
 ```
 
@@ -443,8 +443,8 @@ Run these in sequence — this is the full rebuild cycle:
 mvn clean package
 Remove-Item dummy-source-connector-plugin\lib\example-source-connector-1.0-SNAPSHOT-shaded.jar
 Copy-Item -Force target\example-source-connector-1.0-SNAPSHOT-shaded.jar dummy-source-connector-plugin\lib\
-kubectl delete connect dummy-source-connect -n confluent
-minikube image rm docker.io/library/dummy-source-connector:1.0.0
+kubectl delete connect generic-http-sink-connect-0 -n confluent
+minikube image rm docker.io/library/generic-http-sink-connector:1.0.1
 docker rmi dummy-source-connector:1.0.0
 docker build --no-cache -t dummy-source-connector:1.0.0 .
 minikube image load dummy-source-connector:1.0.0
@@ -482,3 +482,33 @@ kubectl apply -f k8s\sink-connector.yaml
 | [k8s/connect.yaml](k8s/connect.yaml) | Deploys the Kafka Connect cluster pod via CFK |
 | [k8s/source-connector.yaml](k8s/source-connector.yaml) | Creates the source connector instance inside the Connect cluster |
 | [k8s/sink-connector.yaml](k8s/sink-connector.yaml) | Creates the sink connector instance inside the Connect cluster |
+
+
+
+
+# Delete application resources
+kubectl delete connector workday-eoi-sink -n confluent --ignore-not-found
+kubectl delete connect standard-connect -n confluent --ignore-not-found
+
+# Force remove image from inside minikube
+minikube ssh -- docker rmi -f docker.io/library/generic-http-sink-connector:1.0.1
+
+# Rebuild and reload
+docker build --no-cache -t generic-http-sink-connector:1.0.1 .
+minikube image load generic-http-sink-connector:1.0.1
+
+# Redeploy
+kubectl apply -f k8s\connect.yaml
+kubectl get pods -n confluent -w
+
+# Check logs
+kubectl logs standard-connect-0 -n confluent -f
+kubectl describe connect standard-connect -n confluent
+
+
+Once the pod is 1/1 Running:
+kubectl apply -f k8s\sink-connector.yaml
+
+kubectl get connectors -n confluent -w
+
+kubectl logs standard-connect-0 -n confluent -f

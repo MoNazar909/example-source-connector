@@ -1,7 +1,7 @@
 apiVersion: platform.confluent.io/v1beta1
 kind: Connect
 metadata:
-  name: generic-http-sink-connect
+  name: standard-connect
   namespace: confluent
 spec:
   replicas: 1
@@ -11,13 +11,21 @@ spec:
   configOverrides:
     server:
       - plugin.path=/usr/share/java,/mnt/plugins
+      - group.id=standard-connect
+      - config.storage.topic=standard-connect-configs
+      - offset.storage.topic=standard-connect-offsets
+      - status.storage.topic=standard-connect-status
   dependencies:
     kafka:
       bootstrapEndpoint: pkc-921jm.us-east-2.aws.confluent.cloud:9092
       authentication:
         type: plain
         jaasConfig:
-          secretRef: confluent-cloud-credentials
+          secretRef: connect-sa-kafka-key
       tls:
         enabled: true
         ignoreTrustStoreConfig: true
+  mountedSecrets:
+    - secretRef: ccloud-kafka-credentials
+    - secretRef: ccloud-sr-credentials
+    - secretRef: bentech-tenant-creds
