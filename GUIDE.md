@@ -494,6 +494,8 @@ kubectl delete connect standard-connect -n confluent --ignore-not-found
 minikube ssh -- docker rmi -f docker.io/library/generic-http-sink-connector:1.0.1
 
 # Rebuild and reload
+mvn clean package
+Copy-Item -Force target\generic-http-sink-connector-1.0-SNAPSHOT-shaded.jar generic-http-sink-connector-plugin\lib\
 docker build --no-cache -t generic-http-sink-connector:1.0.1 .
 minikube image load generic-http-sink-connector:1.0.1
 
