@@ -198,11 +198,11 @@ If it is, delete it: `kubectl delete connector generic-bentech-sink-connector -n
 
 **Check connector status**
 ```
-curl.exe http://localhost:8083/connectors/generic-bentech-sink-connector/status
+curl.exe http://localhost:8083/connectors/workday-eoi-sink/status
 ```
 
 **Delete and re-register the connector**
 ```
-curl.exe -X DELETE http://localhost:8083/connectors/generic-bentech-sink-connector
+curl.exe -X DELETE http://localhost:8083/connectors/workday-eoi-sink
 curl.exe -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d "@connector-config.json"
 ```

@@ -5,7 +5,9 @@
       "Bash(Select-Object FullName, PSIsContainer)",
       "Bash(Sort-Object FullName)",
       "Bash(Format-Table -AutoSize)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(kubectl exec *)",
+      "Bash(xxd .env)"
     ]
   }
 }

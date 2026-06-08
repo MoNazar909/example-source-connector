@@ -4,7 +4,7 @@ metadata:
   name: workday-eoi-sink
   namespace: confluent
 spec:
-  class: com.example.connectors.GenericHttpSinkConnector
+  class: com.standard.ibte.bentech.BentechSinkConnector
   taskMax: 1
   connectClusterRef:
     name: standard-connect
