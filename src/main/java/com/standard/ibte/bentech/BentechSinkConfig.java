@@ -19,6 +19,7 @@ public class BentechSinkConfig extends AbstractConfig {
     public static final String CONNECTOR_CONNECTOR_NAME              = "connector.name";
     public static final String CONNECTOR_KAFKA_SECURITY_PROTOCOL     = "connector.kafka.security.protocol";
     public static final String CONNECTOR_TOKEN_REFRESH_BUFFER_SECONDS = "connector.token.refresh.buffer.seconds";
+    public static final String CONNECTOR_TOKEN_CACHE_MINUTES          = "connector.token.cache.minutes";
 
     public static final ConfigDef CONFIG_DEF = new ConfigDef()
             .define(CONNECTOR_SECRETS_MOUNT_PATH,
@@ -70,7 +71,12 @@ public class BentechSinkConfig extends AbstractConfig {
                     ConfigDef.Type.INT, 0,
                     ConfigDef.Range.between(0, 3600),
                     ConfigDef.Importance.LOW,
-                    "Seconds before token expiry to proactively refresh. 0 disables proactive refresh (Workday default).");
+                    "Seconds before token expiry to proactively refresh. 0 disables proactive refresh (Workday default).")
+            .define(CONNECTOR_TOKEN_CACHE_MINUTES,
+                    ConfigDef.Type.INT, 60,
+                    ConfigDef.Range.between(1, 1440),
+                    ConfigDef.Importance.MEDIUM,
+                    "Maximum number of minutes to cache an access token. Actual expiry is min(expires_in, this value) minus the refresh buffer.");
 
     public BentechSinkConfig(Map<String, ?> originals) {
         super(CONFIG_DEF, originals);

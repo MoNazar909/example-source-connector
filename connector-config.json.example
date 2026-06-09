@@ -1,7 +1,7 @@
 {
-  "name": "generic-bentech-sink-connector",
+  "name": "<CONNECTOR_NAME>",
   "config": {
-    "connector.class": "com.example.connectors.GenericHttpSinkConnector",
+    "connector.class": "com.standard.ibte.bentech.BentechSinkConnector",
     "topics": "<KAFKA_TOPIC>",
     "value.converter": "io.confluent.connect.avro.AvroConverter",
     "value.converter.schema.registry.url": "<SCHEMA_REGISTRY_URL>",
@@ -12,6 +12,15 @@
     "key.converter.basic.auth.credentials.source": "USER_INFO",
     "key.converter.basic.auth.user.info": "<SCHEMA_REGISTRY_API_KEY>:<SCHEMA_REGISTRY_API_SECRET>",
     "content.type": "<CONTENT_TYPE>",
-    "secrets.base.path": "/etc/secrets"
+    "secrets.base.path": "/etc/secrets",
+    "response.topic": "<RESPONSE_TOPIC>",
+    "error.topic": "<ERROR_TOPIC>",
+    "dlq.topic": "<DLQ_TOPIC>",
+    "connector.token.cache.minutes": "60",
+    "kafka.bootstrap.servers": "<KAFKA_BOOTSTRAP_SERVERS>",
+    "schema.registry.url": "<SCHEMA_REGISTRY_URL>",
+    "consumer.override.security.protocol": "SASL_SSL",
+    "consumer.override.sasl.mechanism": "PLAIN",
+    "consumer.override.sasl.jaas.config": "org.apache.kafka.common.security.plain.PlainLoginModule required username='<KAFKA_API_KEY>' password='<KAFKA_API_SECRET>';"
   }
 }

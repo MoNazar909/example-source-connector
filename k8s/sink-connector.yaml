@@ -26,6 +26,7 @@ spec:
     response.topic: standard-eda-bentechdata-workday-response
     error.topic: standard-eda-bentechdata-workday-error
     dlq.topic: standard-eda-bentechdata-workday-dlq
+    connector.token.cache.minutes: "60"
     max.retries: "3"
     retry.backoff.ms: "1000"
     kafka.bootstrap.servers: pkc-921jm.us-east-2.aws.confluent.cloud:9092

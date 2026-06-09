@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class SecretFileReadException extends IOException {
 
-    public SecretFileReadException(String groupId, String suffix, IOException cause) {
-        super("Unable to read mounted secrets file '" + groupId + "_" + suffix + "'", cause);
+    public SecretFileReadException(String path, IOException cause) {
+        super("Unable to read mounted secrets file '" + path + "'", cause);
     }
 }

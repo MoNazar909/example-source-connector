@@ -29,18 +29,20 @@ public final class BentechClient implements AutoCloseable {
 
     private final String requestContentType;
     private final long tokenRefreshBufferSeconds;
+    private final int tokenCacheMinutes;
     private final BentechSinkRecordMapper mapper;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
     private final BentechTokenManager tokenManager;
 
     public BentechClient(BentechSinkConfig config) {
-        this.requestContentType       = config.getString(BentechSinkConfig.CONNECTOR_REQUEST_CONTENT_TYPE);
+        this.requestContentType        = config.getString(BentechSinkConfig.CONNECTOR_REQUEST_CONTENT_TYPE);
         this.tokenRefreshBufferSeconds = config.getInt(BentechSinkConfig.CONNECTOR_TOKEN_REFRESH_BUFFER_SECONDS);
-        this.mapper                   = new BentechSinkRecordMapper();
-        this.httpClient               = HttpClient.newHttpClient();
-        this.objectMapper             = new ObjectMapper();
-        this.tokenManager             = new BentechTokenManager(
+        this.tokenCacheMinutes         = config.getInt(BentechSinkConfig.CONNECTOR_TOKEN_CACHE_MINUTES);
+        this.mapper                    = new BentechSinkRecordMapper();
+        this.httpClient                = HttpClient.newHttpClient();
+        this.objectMapper              = new ObjectMapper();
+        this.tokenManager              = new BentechTokenManager(
                 config.getString(BentechSinkConfig.CONNECTOR_SECRETS_MOUNT_PATH),
                 httpClient, objectMapper);
     }
@@ -72,7 +74,7 @@ public final class BentechClient implements AutoCloseable {
 
         String accessToken;
         try {
-            accessToken = tokenManager.ensureToken(groupId, tokenUrl, bufferSeconds, targetBentech);
+            accessToken = tokenManager.ensureToken(groupId, tokenUrl, tokenCacheMinutes, bufferSeconds, targetBentech);
         } catch (TokenRefreshFailedException e) {
             throw new IOException("Failed to acquire access token for group '" + groupId + "'", e);
         }

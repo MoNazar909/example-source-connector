@@ -43,9 +43,10 @@ public final class BentechTokenManager {
     /**
      * Returns a valid access token for the given groupId, refreshing if necessary.
      * Token rotation: a new refresh_token from the response replaces the cached one.
+     * Effective cache duration is min(expires_in, cacheDurationMinutes * 60) - bufferSeconds.
      */
     public String ensureToken(String groupId, String tokenUrl,
-                              long tokenRefreshBufferSeconds, String targetBentech)
+                              long cacheDurationMinutes, long tokenRefreshBufferSeconds, String targetBentech)
             throws TokenRefreshFailedException {
 
         TokenEntry entry = tokenCache.computeIfAbsent(groupId, k -> new TokenEntry());
@@ -65,13 +66,14 @@ public final class BentechTokenManager {
             try {
                 BentechTypes bentechType = BentechTypes.validate(targetBentech);
 
-                // Bootstrap refresh token from secrets on first use (Workday only)
-                if (entry.refreshToken == null && bentechType.requiresRefreshToken()) {
-                    entry.refreshToken = readSecret(groupId, "refreshtoken");
-                }
+                String[] creds = readClientCredentials(groupId);
+                String clientId     = creds[0];
+                String clientSecret = creds[1];
 
-                String clientId     = readSecret(groupId, "clientId");
-                String clientSecret = readSecret(groupId, "clientsecret");
+                // Bootstrap refresh token from file on first use (Workday only); rotated from response thereafter
+                if (entry.refreshToken == null && bentechType.requiresRefreshToken()) {
+                    entry.refreshToken = creds[2];
+                }
 
                 String requestBody = buildRequestBody(entry.refreshToken, clientId, clientSecret, bentechType);
 
@@ -91,16 +93,17 @@ public final class BentechTokenManager {
                     throw new TokenRefreshFailedException(groupId, response.statusCode(), response.body());
                 }
 
-                JsonNode json    = objectMapper.readTree(response.body());
+                JsonNode json     = objectMapper.readTree(response.body());
                 entry.accessToken = json.get("access_token").asText();
-                int expiresIn    = json.has("expires_in") ? json.get("expires_in").asInt() : 3600;
+                int expiresIn     = json.has("expires_in") ? json.get("expires_in").asInt() : 3600;
 
                 // If the provider issued a new refresh token, rotate it
                 if (json.has("refresh_token") && !json.get("refresh_token").isNull()) {
                     entry.refreshToken = json.get("refresh_token").asText();
                 }
 
-                entry.tokenExpiry = Instant.now().plusSeconds(expiresIn - tokenRefreshBufferSeconds);
+                long cacheDurationSeconds = Math.min(expiresIn, cacheDurationMinutes * 60L);
+                entry.tokenExpiry = Instant.now().plusSeconds(cacheDurationSeconds - tokenRefreshBufferSeconds);
 
             } catch (InvalidBentechTypeException e) {
                 throw new TokenRefreshFailedException(groupId, "invalid Bentech type: " + e.getMessage(), e);
@@ -120,15 +123,17 @@ public final class BentechTokenManager {
     }
 
     /**
-     * Reads a credential file from the secrets mount.
-     * Convention: {secretsBasePath}/bentech-tenant-creds/{groupId}_{suffix}
+     * Reads the colon-separated credential file for a group.
+     * Convention: {secretsBasePath}/bentech-tenant-creds/client-creds-{groupId}
+     * File content: clientId:clientSecret:refreshToken
      */
-    private String readSecret(String groupId, String suffix) throws SecretFileReadException {
-        String path = secretsBasePath + "/bentech-tenant-creds/" + groupId + "_" + suffix;
+    private String[] readClientCredentials(String groupId) throws SecretFileReadException {
+        String filePath = secretsBasePath + "/bentech-tenant-creds/client-creds-" + groupId;
         try {
-            return Files.readString(Paths.get(path)).trim();
+            String content = Files.readString(Paths.get(filePath)).trim();
+            return content.split(":", 3);
         } catch (IOException e) {
-            throw new SecretFileReadException(groupId, suffix, e);
+            throw new SecretFileReadException(filePath, e);
         }
     }
 
