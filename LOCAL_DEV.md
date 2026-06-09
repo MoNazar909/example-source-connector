@@ -65,11 +65,13 @@ Create the following files (no file extension, plain text, value only — no new
 ```
 secrets/
 ├── ccloud-kafka-credentials/
-│   ├── username        ← standard-workday-connector-sa-kafka-api-key  (the key itself)
-│   └── password        ← corresponding secret
-└── ccloud-sr-credentials/
-    ├── username        ← standard-workday-connector-sa-sr-api-key  (the key itself)
-    └── password        ← corresponding secret
+│   ├── username        ← workday_connector_kafka_key_id  (Terraform output)
+│   └── password        ← workday_connector_kafka_key_secret
+├── ccloud-sr-credentials/
+│   ├── username        ← workday_connector_sr_key_id  (Terraform output)
+│   └── password        ← workday_connector_sr_key_secret
+└── bentech-tenant-creds/
+    └── client-creds-WMT-12345    ← clientId:clientSecret:refreshToken  (colon-separated)
 ```
 
 PowerShell commands to create them:
@@ -77,16 +79,33 @@ PowerShell commands to create them:
 ```powershell
 New-Item -ItemType Directory -Force secrets\ccloud-kafka-credentials
 New-Item -ItemType Directory -Force secrets\ccloud-sr-credentials
+New-Item -ItemType Directory -Force secrets\bentech-tenant-creds
 
 Set-Content secrets\ccloud-kafka-credentials\username "<CONNECTOR_SA_KAFKA_API_KEY>" -NoNewline
 Set-Content secrets\ccloud-kafka-credentials\password "<CONNECTOR_SA_KAFKA_API_SECRET>" -NoNewline
 Set-Content secrets\ccloud-sr-credentials\username    "<CONNECTOR_SA_SR_API_KEY>"    -NoNewline
 Set-Content secrets\ccloud-sr-credentials\password    "<CONNECTOR_SA_SR_API_SECRET>"  -NoNewline
+Set-Content secrets\bentech-tenant-creds\client-creds-WMT-12345 "<CLIENT_ID>:<CLIENT_SECRET>:<REFRESH_TOKEN>" -NoNewline
 ```
 
 > `secrets/` is gitignored — these files will never be committed.
+>
+> To add another employer group, add one more file: `secrets\bentech-tenant-creds\client-creds-{groupId}`.
 
-### 5. Pre-create the Connect internal topics in Confluent Cloud
+### 5. Register schemas in Confluent Cloud Schema Registry
+
+In the Confluent Cloud UI go to **Schema Registry → Subjects → + Add schema** and register the following. Schema files are in [schemas/](schemas/).
+
+| Topic | Key subject | Key schema | Value subject | Value schema |
+|-------|-------------|------------|---------------|--------------|
+| `standard-eda-bentechdata-workday` | `standard-eda-bentechdata-workday-key` | [kafka_key.avsc](schemas/kafka_key.avsc) | `standard-eda-bentechdata-workday-value` | [flink_bentechsink_workday.avsc](schemas/flink_bentechsink_workday.avsc) |
+| `standard-eda-bentechdata-workday-response` | `standard-eda-bentechdata-workday-response-key` | [kafka_key.avsc](schemas/kafka_key.avsc) | `standard-eda-bentechdata-workday-response-value` | [bentechsink_response.avsc](schemas/bentechsink_response.avsc) |
+| `standard-eda-bentechdata-workday-error` | `standard-eda-bentechdata-workday-error-key` | [kafka_key.avsc](schemas/kafka_key.avsc) | `standard-eda-bentechdata-workday-error-value` | [bentechsink_response.avsc](schemas/bentechsink_response.avsc) |
+| `standard-eda-bentechdata-workday-dlq` | `standard-eda-bentechdata-workday-dlq-key` | [kafka_key.avsc](schemas/kafka_key.avsc) | `standard-eda-bentechdata-workday-dlq-value` | [bentechsink_response.avsc](schemas/bentechsink_response.avsc) |
+
+---
+
+### 6. Pre-create the Connect internal topics in Confluent Cloud
 
 The `standard-connect-sa` has no `CREATE` permission, so the worker cannot auto-create its internal topics. Create these three topics manually in the Confluent Cloud UI or CLI before starting the worker:
 

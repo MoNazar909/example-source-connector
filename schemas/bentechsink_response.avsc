@@ -1,0 +1,22 @@
+{
+  "type": "record",
+  "name": "bentechSinkResponse",
+  "namespace": "com.standardinsurance.eoi",
+  "doc": "Schema for messages written to workday-response, workday-error, and workday-dlq topics by the Workday HTTP Sink Connector. All fields are optional to accommodate success, error, and DLQ scenarios.",
+  "fields": [
+    {"name": "http_status_code",    "type": ["null", "string"], "default": null, "doc": "HTTP status code returned by the Workday endpoint (e.g. 200, 500, 503)"},
+    {"name": "http_status_message", "type": ["null", "string"], "default": null, "doc": "HTTP status message (e.g. OK, Internal Server Error, Service Unavailable)"},
+    {"name": "response_body",       "type": ["null", "string"], "default": null, "doc": "Raw response body from the Workday endpoint; SOAP envelope on success or fault, plain text on infrastructure errors"},
+    {"name": "error_code",          "type": ["null", "string"], "default": null, "doc": "Application-level error code; null on success (e.g. WORKDAY_SOAP_FAULT, HTTP_SINK_MAX_RETRIES_EXCEEDED)"},
+    {"name": "error_message",       "type": ["null", "string"], "default": null, "doc": "Human-readable error description; null on success"},
+    {"name": "retry_count",         "type": ["null", "string"], "default": null, "doc": "Number of retry attempts made before writing to DLQ; populated on DLQ messages only"},
+    {"name": "original_topic",      "type": ["null", "string"], "default": null, "doc": "Source topic the connector consumed from; populated on DLQ messages"},
+    {"name": "original_partition",  "type": ["null", "string"], "default": null, "doc": "Source partition; populated on DLQ messages"},
+    {"name": "original_offset",     "type": ["null", "string"], "default": null, "doc": "Source offset; populated on DLQ messages"},
+    {"name": "correlation_id",      "type": ["null", "string"], "default": null},
+    {"name": "group_id",            "type": ["null", "string"], "default": null},
+    {"name": "event_type",          "type": ["null", "string"], "default": null},
+    {"name": "worker_id",           "type": ["null", "string"], "default": null},
+    {"name": "timestamp",           "type": ["null", "string"], "default": null, "doc": "ISO-8601 timestamp of when the connector processed the record"}
+  ]
+}

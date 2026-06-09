@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "KafkaKey",
+  "namespace": "com.standardinsurance.eoi",
+  "fields": [
+    {
+      "name": "kafka_key",
+      "type": "string",
+      "doc": "Kafka message key: GroupId-WorkerId-Target_BENTECH-EventType"
+    }
+  ]
+}

@@ -100,6 +100,17 @@ These must also exist before the connector processes messages:
 | `standard-eda-bentechdata-workday-error` | Workday business errors |
 | `standard-eda-bentechdata-workday-dlq` | Dead letter queue |
 
+### Schema Registry — register schemas manually
+
+After creating the topics, register the Avro schemas in the Confluent Cloud Schema Registry UI (**Schema Registry → Subjects → + Add schema**). Schema files are in [schemas/](schemas/).
+
+| Topic | Key subject | Key schema file | Value subject | Value schema file |
+|-------|-------------|-----------------|---------------|-------------------|
+| `standard-eda-bentechdata-workday` | `standard-eda-bentechdata-workday-key` | [kafka_key.avsc](schemas/kafka_key.avsc) | `standard-eda-bentechdata-workday-value` | [flink_bentechsink_workday.avsc](schemas/flink_bentechsink_workday.avsc) |
+| `standard-eda-bentechdata-workday-response` | `standard-eda-bentechdata-workday-response-key` | [kafka_key.avsc](schemas/kafka_key.avsc) | `standard-eda-bentechdata-workday-response-value` | [bentechsink_response.avsc](schemas/bentechsink_response.avsc) |
+| `standard-eda-bentechdata-workday-error` | `standard-eda-bentechdata-workday-error-key` | [kafka_key.avsc](schemas/kafka_key.avsc) | `standard-eda-bentechdata-workday-error-value` | [bentechsink_response.avsc](schemas/bentechsink_response.avsc) |
+| `standard-eda-bentechdata-workday-dlq` | `standard-eda-bentechdata-workday-dlq-key` | [kafka_key.avsc](schemas/kafka_key.avsc) | `standard-eda-bentechdata-workday-dlq-value` | [bentechsink_response.avsc](schemas/bentechsink_response.avsc) |
+
 ---
 
 ## 3. Build the JAR and Docker Image
@@ -125,15 +136,29 @@ All secrets go in the `confluent` namespace.
 ### 4a. Connect worker Kafka auth (`connect-sa-kafka-key`)
 
 Used by CFK to authenticate the Connect worker to the Kafka broker.
-The `plain.txt` value must be two lines: `username=<key>` and `password=<secret>`.
+
+Copy the example file, fill in the values, then create the secret:
+
+```powershell
+cp plain.txt.example plain.txt
+```
+
+Edit `plain.txt` — replace the placeholders with values from Terraform output `connect_kafka_key_id` / `connect_kafka_key_secret`:
+
+```
+username=WNTHHJU6BSQC2H3Q
+password=cfltKDDkpbRD+2brTg3kCQ+...
+```
+
+Then create the secret:
 
 ```powershell
 kubectl create secret generic connect-sa-kafka-key `
-  --from-literal=plain.txt="username=<CONNECT_SA_KAFKA_API_KEY>`npassword=<CONNECT_SA_KAFKA_API_SECRET>" `
+  --from-file=plain.txt=plain.txt `
   -n confluent
 ```
 
-> Values come from the Terraform output `connect_kafka_key_id` / `connect_kafka_key_secret`.
+> `plain.txt` is gitignored — it will never be committed.
 
 ---
 
@@ -172,17 +197,17 @@ kubectl create secret generic ccloud-sr-credentials `
 ### 4d. Workday tenant OAuth credentials (`bentech-tenant-creds`)
 
 Mounted at `/mnt/secrets/bentech-tenant-creds/` inside the pod.
-Contains OAuth credentials per `groupId`. Add one set of keys per employer group.
+One key per employer group, named `client-creds-{groupId}`, value is `clientId:clientSecret:refreshToken` (colon-separated).
 
 ```powershell
 kubectl create secret generic bentech-tenant-creds `
-  --from-literal=WMT-12345_clientId=<WORKDAY_CLIENT_ID> `
-  --from-literal=WMT-12345_clientsecret=<WORKDAY_CLIENT_SECRET> `
-  --from-literal=WMT-12345_refreshtoken=<WORKDAY_REFRESH_TOKEN> `
+  --from-literal=client-creds-WMT-12345="MGViZTBiZTItZTFlZi00OWE0LWE1YWQtNjQ0ZWNlNmZjNDky:2l8bipzv03o4wjkh9nmt95cekfd2o9zi6ads94iriclk8lbuff21xcp6x4m01ktg0n8vya894moihfk9qsiwcjnyebikvkbm9q8:2ka1xbuvbpt4folrxkv205fhtnsyr00eo2gs4mlybvu6y27qfwe8b14m4d01by4m3ovnacawxrns9yp6urlmyvz18wxantrf89c" `
   -n confluent
 ```
 
-> For multiple groups, add additional `--from-literal` entries with the appropriate `groupId` prefix (e.g. `WMT-99999_clientId`).
+> To add more groups, append additional `--from-literal` entries (e.g. `--from-literal=client-creds-ABC-999="..."`) and recreate the secret.
+>
+> Alternatively, apply [k8s/bentech-tenant-creds.yaml](k8s/bentech-tenant-creds.yaml) directly — add one `stringData` key per group and run `kubectl apply`.
 
 ---
 
@@ -275,11 +300,48 @@ kubectl patch connect standard-connect -n confluent --type=merge --patch-file pa
 
 ---
 
-## 10. Secret Summary
+## 10. Rebuild and Redeploy
+
+Use this after any code change that requires a new image in minikube.
+
+```powershell
+# Delete application resources
+kubectl delete connector workday-eoi-sink -n confluent --ignore-not-found
+kubectl delete connect standard-connect -n confluent --ignore-not-found
+
+# Force remove image from inside minikube
+minikube ssh -- docker rmi -f docker.io/library/generic-http-sink-connector:1.0.1
+
+# Rebuild and reload
+mvn clean package
+Copy-Item -Force target\generic-http-sink-connector-1.0-SNAPSHOT-shaded.jar generic-http-sink-connector-plugin\lib\
+docker build --no-cache -t generic-http-sink-connector:1.0.1 .
+minikube image load generic-http-sink-connector:1.0.1
+
+# Redeploy Connect cluster
+kubectl apply -f k8s\connect.yaml
+kubectl get pods -n confluent -w
+
+# Check logs while pod is starting
+kubectl logs standard-connect-0 -n confluent -f
+kubectl describe connect standard-connect -n confluent
+```
+
+Once the pod is `1/1 Running`:
+
+```powershell
+kubectl apply -f k8s\sink-connector.yaml
+kubectl get connectors -n confluent -w
+kubectl logs standard-connect-0 -n confluent -f
+```
+
+---
+
+## 11. Secret Summary
 
 | K8s Secret name | Contents | Used by |
 |-----------------|----------|---------|
 | `connect-sa-kafka-key` | `standard-connect-sa` Kafka API key | CFK Connect worker broker auth |
 | `ccloud-kafka-credentials` | `standard-workday-connector-sa` Kafka API key | Connector's internal KafkaProducer |
 | `ccloud-sr-credentials` | `standard-workday-connector-sa` SR API key | Connector's internal KafkaProducer Avro serializer |
-| `bentech-tenant-creds` | Workday OAuth credentials per groupId | `WorkdayApiClient` token refresh |
+| `bentech-tenant-creds` | One key per groupId: `client-creds-{groupId}` = `clientId:clientSecret:refreshToken` | Connector token refresh per employer group |

@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "bentechSinkWorkdayKafkaPublish",
+  "namespace": "com.standardinsurance.eoi",
+  "fields": [
+    {"name": "flattenedEvent",       "type": ["null", "string"], "default": null, "doc": "Full source event payload serialized as a JSON string"},
+    {"name": "exception",            "type": ["null", "string"], "default": null, "doc": "Serialized JSON string describing the exception; populated only on DLQ/error messages"},
+    {"name": "targetBentechPayload", "type": ["null", "string"], "default": null, "doc": "bentech-specific request payload (e.g. Workday SOAP XML) serialized as a string"},
+    {"name": "targetBentech",        "type": ["null", "string"], "default": null},
+    {"name": "groupId",              "type": ["null", "string"], "default": null},
+    {"name": "eventType",            "type": ["null", "string"], "default": null},
+    {"name": "correlationId",        "type": ["null", "string"], "default": null}
+  ]
+}
