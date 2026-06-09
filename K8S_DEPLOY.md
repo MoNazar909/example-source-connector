@@ -201,7 +201,7 @@ One key per employer group, named `client-creds-{groupId}`, value is `clientId:c
 
 ```powershell
 kubectl create secret generic bentech-tenant-creds `
-  --from-literal=client-creds-WMT-12345="MGViZTBiZTItZTFlZi00OWE0LWE1YWQtNjQ0ZWNlNmZjNDky:2l8bipzv03o4wjkh9nmt95cekfd2o9zi6ads94iriclk8lbuff21xcp6x4m01ktg0n8vya894moihfk9qsiwcjnyebikvkbm9q8:2ka1xbuvbpt4folrxkv205fhtnsyr00eo2gs4mlybvu6y27qfwe8b14m4d01by4m3ovnacawxrns9yp6urlmyvz18wxantrf89c" `
+  --from-literal=client-creds-WMT-12345="<WORKDAY_CLIENT_ID>:<WORKDAY_CLIENT_SECRET>:<WORKDAY_REFRESH_TOKEN>" `
   -n confluent
 ```
 

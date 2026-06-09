@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bentech-tenant-creds
+  namespace: confluent
+type: Opaque
+stringData:
+  client-creds-WMT-12345: "<WORKDAY_CLIENT_ID>:<WORKDAY_CLIENT_SECRET>:<WORKDAY_REFRESH_TOKEN>"
