@@ -230,7 +230,13 @@ Edit `k8s/sink-connector.yaml` and replace all placeholders:
 | `<CONNECTOR_SA_KAFKA_API_SECRET>` | `workday_connector_kafka_key_secret` from Terraform |
 | `<KAFKA_BOOTSTRAP_SERVER>` | Bootstrap server (e.g. `pkc-xxx.us-east-2.aws.confluent.cloud:9092`) |
 
-Also update the `bootstrapEndpoint` in `k8s/connect.yaml` to your cluster's bootstrap server.
+Also copy and fill in `k8s/connect.yaml` from the example:
+
+```powershell
+cp k8s\connect.yaml.example k8s\connect.yaml
+```
+
+Replace `<KAFKA_BOOTSTRAP_SERVER>` with your cluster's bootstrap server (e.g. `pkc-xxx.us-east-2.aws.confluent.cloud:9092`).
 
 ---
 

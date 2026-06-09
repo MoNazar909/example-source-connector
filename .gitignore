@@ -34,3 +34,4 @@ connector-config.json
 .env
 SECRETS.md
 k8s/sink-connector.yaml
+k8s/connect.yaml
