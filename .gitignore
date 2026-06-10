@@ -29,6 +29,7 @@ patch.json
 
 # Credentials
 plain.txt
+secrets/
 docker-compose.yml
 connector-config.json
 .env
