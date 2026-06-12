@@ -27,17 +27,7 @@ spec:
       tls:
         enabled: true
         ignoreTrustStoreConfig: true
-    schemaRegistry:
-      url: <SCHEMA_REGISTRY_URL>
-      authentication:
-        type: basic
-        basic:
-          secretRef: connect-sr-key
-      tls:
-        enabled: true
-        ignoreTrustStoreConfig: true
   mountedSecrets:
     - secretRef: ccloud-kafka-credentials
     - secretRef: ccloud-sr-credentials
     - secretRef: bentech-tenant-creds
-    - secretRef: connect-sr-auth

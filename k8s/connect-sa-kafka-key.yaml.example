@@ -3,8 +3,6 @@ kind: Secret
 metadata:
   name: connect-sa-kafka-key
   namespace: confluent
-  annotations:
-    argocd.argoproj.io/sync-wave: "-10"
 type: Opaque
 stringData:
   plain.txt: "username=<CONNECT_SA_KAFKA_API_KEY>\npassword=<CONNECT_SA_KAFKA_API_SECRET>"

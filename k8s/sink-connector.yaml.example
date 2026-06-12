@@ -13,11 +13,11 @@ spec:
     value.converter: io.confluent.connect.avro.AvroConverter
     value.converter.schema.registry.url: <SCHEMA_REGISTRY_URL>
     value.converter.basic.auth.credentials.source: USER_INFO
-    value.converter.basic.auth.user.info: "${file:/mnt/secrets/connect-sr-auth/auth.properties:basic.auth.user.info}"
+    value.converter.basic.auth.user.info: "${file:/mnt/secrets/ccloud-sr-credentials/auth.properties:basic.auth.user.info}"
     key.converter: io.confluent.connect.avro.AvroConverter
     key.converter.schema.registry.url: <SCHEMA_REGISTRY_URL>
     key.converter.basic.auth.credentials.source: USER_INFO
-    key.converter.basic.auth.user.info: "${file:/mnt/secrets/connect-sr-auth/auth.properties:basic.auth.user.info}"
+    key.converter.basic.auth.user.info: "${file:/mnt/secrets/ccloud-sr-credentials/auth.properties:basic.auth.user.info}"
     content.type: application/xml
     secrets.base.path: /mnt/secrets
     response.topic: standard-eda-bentechdata-workday-response
