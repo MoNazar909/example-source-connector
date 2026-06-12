@@ -13,21 +13,19 @@ spec:
     value.converter: io.confluent.connect.avro.AvroConverter
     value.converter.schema.registry.url: <SCHEMA_REGISTRY_URL>
     value.converter.basic.auth.credentials.source: USER_INFO
-    value.converter.basic.auth.user.info: "<CONNECTOR_SA_SR_API_KEY>:<CONNECTOR_SA_SR_API_SECRET>"
+    value.converter.basic.auth.user.info: "${file:/mnt/secrets/connect-sr-auth/auth.properties:basic.auth.user.info}"
     key.converter: io.confluent.connect.avro.AvroConverter
     key.converter.schema.registry.url: <SCHEMA_REGISTRY_URL>
     key.converter.basic.auth.credentials.source: USER_INFO
-    key.converter.basic.auth.user.info: "<CONNECTOR_SA_SR_API_KEY>:<CONNECTOR_SA_SR_API_SECRET>"
-    consumer.override.security.protocol: SASL_SSL
-    consumer.override.sasl.mechanism: PLAIN
-    consumer.override.sasl.jaas.config: "org.apache.kafka.common.security.plain.PlainLoginModule required username='<CONNECTOR_SA_KAFKA_API_KEY>' password='<CONNECTOR_SA_KAFKA_API_SECRET>';"
+    key.converter.basic.auth.user.info: "${file:/mnt/secrets/connect-sr-auth/auth.properties:basic.auth.user.info}"
     content.type: application/xml
     secrets.base.path: /mnt/secrets
     response.topic: standard-eda-bentechdata-workday-response
     error.topic: standard-eda-bentechdata-workday-error
     dlq.topic: standard-eda-bentechdata-workday-dlq
     connector.token.cache.minutes: "60"
-    max.retries: "3"
-    retry.backoff.ms: "1000"
+    connector.kafka.security.protocol: SASL_SSL
     kafka.bootstrap.servers: <KAFKA_BOOTSTRAP_SERVER>
     schema.registry.url: <SCHEMA_REGISTRY_URL>
+    max.retries: "3"
+    retry.backoff.ms: "1000"

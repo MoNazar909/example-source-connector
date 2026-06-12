@@ -15,6 +15,8 @@ spec:
       - config.storage.topic=standard-connect-configs
       - offset.storage.topic=standard-connect-offsets
       - status.storage.topic=standard-connect-status
+      - config.providers=file
+      - config.providers.file.class=org.apache.kafka.common.config.provider.FileConfigProvider
   dependencies:
     kafka:
       bootstrapEndpoint: <KAFKA_BOOTSTRAP_SERVER>
@@ -25,7 +27,17 @@ spec:
       tls:
         enabled: true
         ignoreTrustStoreConfig: true
+    schemaRegistry:
+      url: <SCHEMA_REGISTRY_URL>
+      authentication:
+        type: basic
+        basic:
+          secretRef: connect-sr-key
+      tls:
+        enabled: true
+        ignoreTrustStoreConfig: true
   mountedSecrets:
     - secretRef: ccloud-kafka-credentials
     - secretRef: ccloud-sr-credentials
     - secretRef: bentech-tenant-creds
+    - secretRef: connect-sr-auth

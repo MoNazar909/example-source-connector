@@ -36,3 +36,7 @@ connector-config.json
 SECRETS.md
 k8s/sink-connector.yaml
 k8s/connect.yaml
+k8s/kafka-key-secret.yaml
+k8s/ccloud-sr-credentials-secret.yaml
+k8s/connect-sr-key-secret.yaml
+k8s/connect-sr-auth-secret.yaml
